@@ -3,6 +3,7 @@ using IdentityModel.OidcClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,6 +22,7 @@ namespace WinFormsClient1.Forms
                 return _oidcClient;
             }
         }
+        private HttpClientHandler _handler;
         private HttpClient _apiClient;
         protected HttpClient ApiClient
         {
@@ -55,7 +57,22 @@ namespace WinFormsClient1.Forms
 
         private void InitializeHttpClient()
         {
-            _apiClient = new HttpClient { BaseAddress = new Uri("http://localhost:60176/") };
+            _handler = new HttpClientHandler();
+            _apiClient = new HttpClient(_handler) { BaseAddress = new Uri("http://localhost:60176/") };
+            
+            //_apiClient = new HttpClient { BaseAddress = new Uri("http://localhost:60176/") };
+
+            
+            //using (var handler = new HttpClientHandler { UseCookies = false })
+            //using (var client = new HttpClient(handler) { BaseAddress = baseUrl })
+            //{
+            //    var msg = new HttpRequestMessage(HttpMethod.Get, getActionUrl(controller + @"/GetPage"));
+            //    setCookies(ref msg);
+            //    response = client.SendAsync(msg).Result;
+            //    updateAntiforgeryToken(response);
+            //    updateCookies(response);
+            //}
+
         }
 
         protected async Task GetAntiforgeryToken(string controller = "Home", string action = "GetAntiforgeryToken")
@@ -73,11 +90,14 @@ namespace WinFormsClient1.Forms
             var index2 = result.IndexOf(@"value=""", index1) + 7;
             var index3 = result.IndexOf(@"""", index2);
             antiforgeryTokenValue = result.Substring(index2, index3 - index2);
+
+            //Cookie cookie = new Cookie(antiforgeryTokenName, antiforgeryTokenValue, "", "localhost");
+            //_handler.CookieContainer.Add(cookie);
         }
 
         protected FormUrlEncodedContent GenerateContent(string paramValue, string paramName = "parameter")
         {
-            ApiClient.SetBearerToken(currentAccessToken);
+            //ApiClient.SetBearerToken(currentAccessToken);
             var pairs = new List<KeyValuePair<string, string>>();
             if (antiforgeryTokenValue.Length > 0) pairs.Add(new KeyValuePair<string, string>(antiforgeryTokenName, antiforgeryTokenValue));
             if (paramValue.Length > 0) pairs.Add(new KeyValuePair<string, string>(paramName, paramValue));
@@ -92,6 +112,7 @@ namespace WinFormsClient1.Forms
                 currentAccessToken = result.AccessToken;
                 currentIdentityToken = result.IdentityToken;
                 currentRefreshToken = result.RefreshToken;
+                ApiClient.SetBearerToken(currentAccessToken);
                 if (getAntiforgeryToken)
                 {
                     await GetAntiforgeryToken();
