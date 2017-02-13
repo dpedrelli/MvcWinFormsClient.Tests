@@ -75,9 +75,18 @@ namespace WinFormsClient1.Forms
             {
                 products = await response.Content.ReadAsAsync<BindingList<Product>>();
                 RefreshProducts();
+                SetProductDataBindings();
                 //BindData<Product>(products, dtProducts);
             }
             //return products;
+        }
+
+        bool _productBound = false;
+        private void SetProductDataBindings()
+        {
+            if (_productBound) { return; }
+            edtId.DataBindings.Add("Text", bsProducts, "Id");
+            _productBound = true;
         }
 
         private async Task DeleteProduct(Product product)
@@ -159,5 +168,6 @@ namespace WinFormsClient1.Forms
         {
             txtProductId.Text = products[dataGridView1.CurrentCell.RowIndex].Id;
         }
+
     }
 }

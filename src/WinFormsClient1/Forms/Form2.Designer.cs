@@ -36,6 +36,7 @@
             this.button5 = new System.Windows.Forms.Button();
             this.txtProductId = new System.Windows.Forms.TextBox();
             this.button6 = new System.Windows.Forms.Button();
+            this.edtId = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -115,11 +116,19 @@
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
+            // edtId
+            // 
+            this.edtId.Location = new System.Drawing.Point(342, 195);
+            this.edtId.Name = "edtId";
+            this.edtId.Size = new System.Drawing.Size(100, 20);
+            this.edtId.TabIndex = 12;
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(554, 372);
+            this.Controls.Add(this.edtId);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.txtProductId);
             this.Controls.Add(this.button5);
@@ -146,5 +155,6 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.TextBox txtProductId;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.TextBox edtId;
     }
 }
