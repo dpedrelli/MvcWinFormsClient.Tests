@@ -91,8 +91,8 @@ namespace WinFormsClient1.Forms
             var index3 = result.IndexOf(@"""", index2);
             antiforgeryTokenValue = result.Substring(index2, index3 - index2);
 
-            //Cookie cookie = new Cookie(antiforgeryTokenName, antiforgeryTokenValue, "", "localhost");
-            //_handler.CookieContainer.Add(cookie);
+            // HttpClient is not instianted with each call.
+            // The first call to GetAntiforgeryToken retrieves and sets the .AspNetCore.Antiforgery. cookie, for the HttpClient object.
         }
 
         protected FormUrlEncodedContent GenerateContent(string paramValue, string paramName = "parameter")

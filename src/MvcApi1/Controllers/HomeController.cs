@@ -75,7 +75,6 @@ namespace MvcApi1.Controllers
                 }
             }
             return new StatusCodeResult(404);
-            //return new EmptyResult();
         }
 
         public IActionResult About()
