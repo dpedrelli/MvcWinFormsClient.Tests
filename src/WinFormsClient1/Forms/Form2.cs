@@ -22,27 +22,16 @@ namespace WinFormsClient1.Forms
         public Form2()
         {
             InitializeComponent();
-            //bsProducts.DataSource = dtProducts;
-            //dataGridView1.DataSource = dtProducts;
-            //dataGridView1.DataSource = products;
-            //products.ListChanged += delegate (object sender, ListChangedEventArgs args)
-            //{
-            //    OnListChanged(sender, args);
-            //};
-            //products.AddingNew += delegate (object sender, AddingNewEventArgs e)
-            //{
-            //    OnAddingNew(sender, e);
-            //};
-            //products.ListChanged += OnListChanged;
+            products.ListChanged += OnListChanged;
             //products.AddingNew += OnAddingNew;
-            //bsProducts.DataSource = products;
+            bsProducts.DataSource = products;
             dataGridView1.DataSource = bsProducts;
         }
 
-        //private void OnListChanged(object sender, ListChangedEventArgs e)
-        //{
-        //    bsProducts.DataSource = products;
-        //}
+        private void OnListChanged(object sender, ListChangedEventArgs e)
+        {
+            bsProducts.DataSource = products;
+        }
         //private void OnAddingNew(object sender, AddingNewEventArgs e)
         //{
         //    bsProducts.DataSource = products;
@@ -61,24 +50,19 @@ namespace WinFormsClient1.Forms
             }
         }
 
-        private void RefreshProducts()
+        private async Task GetProducts(string id)
         {
-            ////BindData<Product>(products, dtProducts);
-            ////dataGridView1.DataSource = bsProducts;
-            bsProducts.DataSource = products;
-        }
-        private async Task/*<List<Product>>*/ GetProducts(string id)
-        {
-            //List<Product> products = null;
             HttpResponseMessage response = await ApiClient.PostAsync("Home/GetProducts", GenerateContent(id, "id"));
             if (response.IsSuccessStatusCode)
             {
-                products = await response.Content.ReadAsAsync<BindingList<Product>>();
-                RefreshProducts();
+                var result = await response.Content.ReadAsAsync<List<Product>>();
+                products.Clear();
+                foreach (var item in result)
+                {
+                    products.Add(item);
+                }
                 SetProductDataBindings();
-                //BindData<Product>(products, dtProducts);
             }
-            //return products;
         }
 
         bool _productBound = false;
@@ -91,14 +75,11 @@ namespace WinFormsClient1.Forms
 
         private async Task DeleteProduct(Product product)
         {
-            //var temp = JsonConvert.SerializeObject(product);
             //var temp = new StringContent(new JavaScriptSerializer().Serialize(product), Encoding.UTF8, "application/json");
             var temp = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response = await ApiClient.PostAsync("Home/DeleteProduct", GenerateContent(await temp.ReadAsStringAsync(), "product"));
-            //HttpResponseMessage response = await ApiClient.PostAsJsonAsync("Home/DeleteProduct", product);
+            //HttpResponseMessage response = await ApiClient.PostAsync("Home/DeleteProduct", GenerateContent(await temp.ReadAsStringAsync(), "product"));
+            HttpResponseMessage response = await ApiClient.PostAsJsonAsync("Home/DeleteProduct", product);
             response.EnsureSuccessStatusCode();
-            //HttpResponseMessage response = await ApiClient.PostAsync("Home/DeleteProduct", GenerateContent(, "product"));
         }
         private async Task<bool> DeleteProductAsString(Product product)
         {
@@ -131,21 +112,6 @@ namespace WinFormsClient1.Forms
         private async void button4_Click(object sender, System.EventArgs e)
         {
             await GetProducts("");
-            //products = await GetProducts("");
-            //if (products == null) { return; }
-            //DataTable dtProducts = new DataTable();
-            //BindData<Product>(products, dtProducts);
-            //dataGridView1.DataSource = products;
-        }
-
-        private void productsBindingNavigatorSaveItem_Click(object sender, System.EventArgs e)
-        {
-
-        }
-
-        private void productsBindingSource_CurrentChanged(object sender, System.EventArgs e)
-        {
-
         }
 
         private async void button5_Click(object sender, System.EventArgs e)
@@ -158,7 +124,6 @@ namespace WinFormsClient1.Forms
             if (await DeleteProductAsString(products[dataGridView1.CurrentCell.RowIndex]))
             {
                 products.Remove(products[dataGridView1.CurrentCell.RowIndex]);
-                RefreshProducts();
                 return;
             }
             MessageBox.Show("Delete Failed");
